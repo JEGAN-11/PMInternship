@@ -15,6 +15,16 @@ export const updateProfile = async (req, res) => {
   try {
     const { bio, skills, github, linkedin, leetcode } = req.body;
 
+    // Process skills properly whether it's a string or array
+    let processedSkills = [];
+    if (skills) {
+      if (typeof skills === 'string') {
+        processedSkills = skills.split(',').map(s => s.trim()).filter(Boolean);
+      } else if (Array.isArray(skills)) {
+        processedSkills = skills;
+      }
+    }
+
     const user = await User.findByIdAndUpdate(
       req.user.id,
       {
@@ -22,7 +32,7 @@ export const updateProfile = async (req, res) => {
         github,
         linkedin,
         leetcode,
-        skills: skills ? skills.split(",").map((s) => s.trim()) : []
+        skills: processedSkills
       },
       { new: true }
     ).select("-password");

@@ -68,8 +68,10 @@ export const AuthProvider = ({ children }) => {
 
   const isProfileComplete = () => {
     if (!user?.profile) return false;
-    const { name, bio, github, linkedin, leetcode } = user.profile;
-    return name && bio && github && linkedin && leetcode;
+    const { bio } = user.profile;
+    // Consider a profile complete if they've at least filled in the bio
+    // You can adjust this logic based on what fields are truly required
+    return !!bio;
   };
 
   return (

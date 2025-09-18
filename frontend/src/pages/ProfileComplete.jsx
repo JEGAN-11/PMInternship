@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -52,9 +54,19 @@ export default function Profile() {
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
+      // Update the profile in the auth context to ensure it's marked as complete
+      if (updateProfile) {
+        await updateProfile(res.data);
+      }
+
       setProfile(res.data);
       setSkillsInput(res.data.skills.join(", "));
       setMessage({ type: "success", text: "✅ Profile updated successfully" });
+      
+      // Navigate to dashboard after successful update
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000); // Short delay to show success message before navigating
     } catch (err) {
       console.error(err);
       setMessage({ type: "error", text: "❌ Update failed" });
